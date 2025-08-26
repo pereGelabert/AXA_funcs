@@ -9,7 +9,7 @@
 #' @return An sf object with `n_areas` sub-polygons, each with an `area` column.
 #' @import sf tidyverse dismo units
 
-tiling<- function(AOI, n_areas) {
+tiling<- function(AOI, n_areas, area_unit) {
   require(sf)
   require(tidyverse) 
   require(dismo)
@@ -38,7 +38,7 @@ tiling<- function(AOI, n_areas) {
     group_by(id) %>% summarise()
   
   # 7. Compute area of each sub-polygon
-  equal_areas$area <- st_area(equal_areas) %>% set_units(.,"km2")
+  equal_areas$area <- st_area(equal_areas) %>% set_units(.,area_unit)
   
   return(equal_areas)
 }
