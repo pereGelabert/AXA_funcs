@@ -38,7 +38,7 @@ tiling<- function(AOI, n_areas, area_unit) {
     group_by(id) %>% summarise()
   
   # 7. Compute area of each sub-polygon
-  equal_areas$area <- st_area(equal_areas) %>% set_units(.,area_unit)
+  equal_areas$area <- st_area(equal_areas) %>% set_units(.,"km2")
   
   return(equal_areas)
 }
