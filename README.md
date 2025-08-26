@@ -43,4 +43,4 @@ for (i in seq_len(nrow(tiles))) {
 
 r_final <- do.call(mosaic, output_rasters)
 writeRaster(r_final, "densidad_chile.tif", overwrite = TRUE)
-```r
+```
