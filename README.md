@@ -3,6 +3,7 @@
 
 ```r
 source("https://raw.githubusercontent.com/pereGelabert/AXA_funcs/refs/heads/main/tiling_chile.R")
+
 # 1. Load main Chile polygon and filter large polygons (mainland)
 Chile <- st_read("./Chile_main.gpkg") %>%
   dplyr::select(NAME)
