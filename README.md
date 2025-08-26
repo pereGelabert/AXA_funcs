@@ -1,3 +1,28 @@
+# Tile creation
+## Usage:
+
+```r
+library(tidyverse)
+
+# 1. Load main Chile polygon and filter large polygons (mainland)
+main_Chile <- st_read("./Chile_main.gpkg") %>%
+  dplyr::select(NAME) %>% 
+  mutate(area = st_area(.) %>% units::drop_units()) %>%
+  filter(area >= 26442913593)  # keep largest polygons (mainland)
+
+plot(main_Chile)
+
+# 2. Split the polygon into ~200 tiles
+pol_areas <- split_poly(main_Chile, 200) %>% 
+  dplyr::select(id, area) %>%
+  mutate(area = set_units(area, "km2"))
+
+plot(pol_areas)
+
+# 3. Save tiles to GeoPackage
+st_write(pol_areas, "./tiles.gpkg", append = FALSE)
+```
+
 # Get forest patches
 
 ## Usage
