@@ -2,6 +2,7 @@
 ## Usage:
 
 ```r
+
 source("https://raw.githubusercontent.com/pereGelabert/AXA_funcs/refs/heads/main/tiling_chile.R")
 
 # 1. Load main Chile polygon and filter large polygons (mainland)
@@ -11,7 +12,7 @@ Chile <- st_read("./Chile_main.gpkg") %>%
 plot(main_Chile)
 
 # 2. Split the polygon into ~200 tiles
-pol_areas <- split_poly(main_Chile, 200) %>% 
+pol_areas <- split_poly(Chile, 200) %>% 
   dplyr::select(id, area) 
 
 plot(pol_areas)
@@ -19,7 +20,7 @@ plot(pol_areas)
 # 3. Save tiles to GeoPackage
 st_write(pol_areas, "./tiles.gpkg", append = FALSE)
 ```
-
+---
 # Get forest patches
 
 ## Usage
