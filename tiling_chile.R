@@ -37,7 +37,7 @@ tiling<- function(sf_poly, n_areas) {
     group_by(id) %>% summarise()
   
   # 7. Compute area of each sub-polygon
-  equal_areas$area <- st_area(equal_areas)
+  equal_areas$area <- st_area(equal_areas) %>% set_units(.,"km2")
   
   return(equal_areas)
 }
