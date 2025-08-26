@@ -9,13 +9,14 @@ source("https://raw.githubusercontent.com/pereGelabert/AXA_funcs/refs/heads/main
 Chile <- st_read("./Chile_main.gpkg") %>%
   dplyr::select(NAME)
 
-plot(main_Chile)
+plot(Chile)
 
 # 2. Split the polygon into ~200 tiles
-pol_areas <- tiling(Chile, 200) %>% 
+equal_areas <- tiling(AOI = Chile, n_areas = 200, area_unit="km2") %>% 
   dplyr::select(id, area) 
 
-plot(pol_areas)
+plot(hist(equal_areas$area))
+plot(equal_areas %>% dplyr::select(area))
 
 # 3. Save tiles to GeoPackage
 st_write(pol_areas, "./tiles.gpkg", append = FALSE)
