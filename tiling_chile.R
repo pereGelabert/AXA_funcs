@@ -9,7 +9,7 @@
 #' @return An sf object with `n_areas` sub-polygons, each with an `area` column.
 #' @import sf tidyverse dismo units
 
-tiling<- function(AOI, n_areas, area_unit) {
+tiling<- function(AOI, n_areas) {
   require(sf)
   require(tidyverse) 
   require(dismo)
