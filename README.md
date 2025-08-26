@@ -14,7 +14,7 @@ ForestPatches <- get_dist_Forestpatches(
 ```
 ---
 # Get building density
-## usage:
+## Usage:
 ```r
 source("https://raw.githubusercontent.com/pereGelabert/AXA_funcs/refs/heads/main/density_func.R")
 tiles <- st_read("tiles.gpkg")
