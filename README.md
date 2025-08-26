@@ -12,7 +12,7 @@ Chile <- st_read("./Chile_main.gpkg") %>%
 plot(Chile)
 
 # 2. Split the polygon into ~200 tiles
-equal_areas <- tiling(AOI = Chile, n_areas = 200, area_unit="km2") %>% 
+equal_areas <- tiling(AOI = Chile, n_areas = 200) %>% 
   dplyr::select(id, area) 
 
 plot(hist(equal_areas$area))
