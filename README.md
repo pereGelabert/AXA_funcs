@@ -12,7 +12,7 @@ Chile <- st_read("./Chile_main.gpkg") %>%
 plot(main_Chile)
 
 # 2. Split the polygon into ~200 tiles
-pol_areas <- split_poly(Chile, 200) %>% 
+pol_areas <- tiling(Chile, 200) %>% 
   dplyr::select(id, area) 
 
 plot(pol_areas)
