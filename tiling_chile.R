@@ -9,14 +9,14 @@
 #' @return An sf object with `n_areas` sub-polygons, each with an `area` column.
 #' @import sf tidyverse dismo units
 
-tiling<- function(sf_poly, n_areas) {
+tiling<- function(AOI, n_areas) {
   require(sf)
   require(tidyverse) 
   require(dismo)
   require(units)
 
   # 1. Generate random points within the polygon
-  points_rnd <- st_sample(sf_poly, size = 10000)
+  points_rnd <- st_sample(AOI, size = 10000)
   
   # 2. Extract coordinates and convert to tibble for k-means
   points <- do.call(rbind, st_geometry(points_rnd)) %>%
@@ -26,14 +26,14 @@ tiling<- function(sf_poly, n_areas) {
   k_means <- kmeans(points, centers = n_areas)
   
   # 4. Create Voronoi polygons based on cluster centers
-  voronoi_polys <- dismo::voronoi(k_means$centers, ext = sf_poly)
+  voronoi_polys <- dismo::voronoi(k_means$centers, ext = AOI)
   
   # 5. Set CRS to match the input polygon
-  crs(voronoi_polys) <- crs(sf_poly)
+  crs(voronoi_polys) <- crs(AOI)
   
   # 6. Convert to sf and clip polygons to original polygon
   voronoi_sf <- st_as_sf(voronoi_polys)
-  equal_areas <- st_intersection(voronoi_sf, sf_poly) %>% 
+  equal_areas <- st_intersection(voronoi_sf, AOI) %>% 
     group_by(id) %>% summarise()
   
   # 7. Compute area of each sub-polygon
