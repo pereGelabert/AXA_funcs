@@ -19,6 +19,8 @@
 #' @return A terra raster of building density for the given tile. Returns NULL
 #'   if no buildings are present within the buffered tile.
 #'
+#' @import terra sf
+#'
 #' @details
 #' The function works in the following steps:
 #' 1. Creates a buffer around the tile proportional to `sigma * buffer_factor`.
@@ -53,6 +55,8 @@ process_tile_density <- function(tile_geom,
                                  sigma = 333,
                                  buffer_factor = 2,
                                  unit_scale = 1e6) {
+  require(terra)
+  require(sf)
   # 1. Create buffer around tile
   buffer_dist <- sigma * buffer_factor
   tile_buffer <- st_buffer(tile_geom, buffer_dist)
@@ -84,6 +88,6 @@ process_tile_density <- function(tile_geom,
   
   # 8. Crop to original tile
   density_raster <- crop(density_raster, vect(tile_geom))
-  
+  plot(density_raster)
   return(density_raster)
 }
