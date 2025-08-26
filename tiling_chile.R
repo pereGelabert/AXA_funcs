@@ -20,7 +20,8 @@ tiling<- function(AOI, n_areas) {
   
   # 2. Extract coordinates and convert to tibble for k-means
   points <- do.call(rbind, st_geometry(points_rnd)) %>%
-    as_tibble() %>% setNames(c("lon","lat"))
+  as_tibble(.name_repair = "minimal") %>%  # avoid name conflicts
+  setNames(c("lon","lat"))
   
   # 3. Apply k-means clustering to points to determine cluster centers
   k_means <- kmeans(points, centers = n_areas)
