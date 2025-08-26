@@ -76,7 +76,7 @@ mask <- coords[,1] >= bbox_aoi["xmin"] &
   coords[,2] >= bbox_aoi["ymin"] &
   coords[,2] <= bbox_aoi["ymax"]
 
-buildings_tile <- puntos[mask, ]
+buildings_tile <- buildings[mask, ]
 if (nrow(buildings_tile) == 0) return(NULL)
 buildings_tile <- buildings_tile %>% mutate(c = 1)
 
