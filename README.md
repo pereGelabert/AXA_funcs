@@ -3,7 +3,7 @@
 ## Usage
 ```r
 
-source("https://raw.githubusercontent.com/pereGelabert/AXA_funcs/refs/heads/main/get_forest_patches.R)
+source("https://raw.githubusercontent.com/pereGelabert/AXA_funcs/refs/heads/main/get_forest_patches.R")
 
 ForestPatches <- get_dist_Forestpatches(
   ESA_WC = "./ESA_WC/LC_IDtile-1_cl.tif",
