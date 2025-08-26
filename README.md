@@ -19,7 +19,7 @@ plot(hist(equal_areas$area))
 plot(equal_areas %>% dplyr::select(area))
 
 # 3. Save tiles to GeoPackage
-st_write(pol_areas, "./tiles.gpkg", append = FALSE)
+st_write(equal_areas, "./tiles.gpkg", append = FALSE)
 ```
 ---
 # Get forest patches
