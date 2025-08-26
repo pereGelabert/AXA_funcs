@@ -2,20 +2,16 @@
 ## Usage:
 
 ```r
-library(tidyverse)
-
+source("https://raw.githubusercontent.com/pereGelabert/AXA_funcs/refs/heads/main/tiling_chile.R")
 # 1. Load main Chile polygon and filter large polygons (mainland)
-main_Chile <- st_read("./Chile_main.gpkg") %>%
-  dplyr::select(NAME) %>% 
-  mutate(area = st_area(.) %>% units::drop_units()) %>%
-  filter(area >= 26442913593)  # keep largest polygons (mainland)
+Chile <- st_read("./Chile_main.gpkg") %>%
+  dplyr::select(NAME)
 
 plot(main_Chile)
 
 # 2. Split the polygon into ~200 tiles
 pol_areas <- split_poly(main_Chile, 200) %>% 
-  dplyr::select(id, area) %>%
-  mutate(area = set_units(area, "km2"))
+  dplyr::select(id, area) 
 
 plot(pol_areas)
 
