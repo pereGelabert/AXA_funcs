@@ -56,38 +56,52 @@ process_tile_density <- function(tile_geom,
                                  buffer_factor = 2,
                                  unit_scale = 1e6) {
   require(terra)
-  require(sf)
-  # 1. Create buffer around tile
-  buffer_dist <- sigma * buffer_factor
-  tile_buffer <- st_buffer(tile_geom, buffer_dist)
-  
-  # 2. Filter buildings within buffered tile
-  buildings_tile <- st_filter(buildings, tile_buffer)
-  if (nrow(buildings_tile) == 0) return(NULL)
-  buildings_tile <- buildings_tile %>% st_centroid() %>% mutate(c = 1)
-  
-  # 3. Crop raster template to buffered tile
-  r_tile <- crop(r_template, vect(tile_buffer))
-  
-  # 4. Rasterize building points
-  build_rast <- rasterize(vect(buildings_tile), r_tile, field = "c", fun = "sum", background = 0)
-  
-  # 5. Create Gaussian kernel
-  res_m <- res(r_tile)[1]
-  radius <- ceiling(buffer_factor * sigma / res_m)
-  x <- seq(-radius, radius)
-  gauss_kernel <- exp(-(x^2) / (2 * (sigma / res_m)^2))
-  kernel <- outer(gauss_kernel, gauss_kernel)
-  kernel <- kernel / sum(kernel)
-  
-  # 6. Apply focal operation to compute density
-  density_raster <- focal(build_rast, w = kernel, fun = sum, na.policy = "omit", pad = TRUE)
-  
-  # 7. Convert to desired units
-  density_raster <- density_raster * (unit_scale / (res_m^2))
-  
-  # 8. Crop to original tile
-  density_raster <- crop(density_raster, vect(tile_geom))
-  plot(density_raster)
-  return(density_raster)
+require(sf)
+tile_geom <- tiles[1,]
+sigma = 333
+buffer_factor = 2
+unit_scale = 1e6
+# 1. Create buffer around tile
+buffer_dist <- sigma * buffer_factor
+tile_buffer <- st_buffer(tile_geom, buffer_dist)
+
+# 2. Filter buildings within buffered tile
+
+bbox_aoi <- st_bbox(tile_buffer)
+coords <- st_coordinates(buildings)
+
+# Filtrado por coordenadas (sin geometría todavía)
+mask <- coords[,1] >= bbox_aoi["xmin"] &
+  coords[,1] <= bbox_aoi["xmax"] &
+  coords[,2] >= bbox_aoi["ymin"] &
+  coords[,2] <= bbox_aoi["ymax"]
+
+buildings_tile <- puntos[mask, ]
+if (nrow(buildings_tile) == 0) return(NULL)
+buildings_tile <- buildings_tile %>% mutate(c = 1)
+
+# 3. Crop raster template to buffered tile
+r_tile <- crop(r_template, vect(tile_buffer))
+
+# 4. Rasterize building points
+build_rast <- rasterize(vect(buildings_tile), r_tile, field = "c", fun = "sum", background = 0)
+
+# 5. Create Gaussian kernel
+res_m <- res(r_tile)[1]
+radius <- ceiling(buffer_factor * sigma / res_m)
+x <- seq(-radius, radius)
+gauss_kernel <- exp(-(x^2) / (2 * (sigma / res_m)^2))
+kernel <- outer(gauss_kernel, gauss_kernel)
+kernel <- kernel / sum(kernel)
+
+# 6. Apply focal operation to compute density
+density_raster <- focal(build_rast, w = kernel, fun = sum, na.policy = "omit", pad = TRUE)
+
+# 7. Convert to desired units
+density_raster <- density_raster * (unit_scale / (res_m^2))
+
+# 8. Crop to original tile
+density_raster <- crop(density_raster, vect(tile_geom))
+plot(density_raster)
+return(density_raster)
 }
