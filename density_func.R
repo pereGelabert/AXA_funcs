@@ -94,13 +94,15 @@ kernel <- kernel / sum(kernel)
 # 6. Apply focal operation to compute density
 density_raster <- focal(build_rast, w = kernel, fun = sum, na.policy = "omit", pad = TRUE)
 
-# 7. Convert to desired units
-density_raster <- density_raster * (unit_scale / (res_m^2))
+# 7. Convert to density (buildings per unit area, e.g., km²)
+  cell_area <- res_m^2
+  window_area <- cell_area * sum(kernel) # total area of kernel in m²
+  density_raster <- density_raster / window_area * unit_scale
 
 # 8. Crop to original tile
-density_raster <- crop(density_raster, vect(tile_geom)) %>% mask(.,vect(tile_geom))
-plot(density_raster)
-return(density_raster)
+  density_raster <- crop(density_raster, vect(tile_geom)) %>% mask(.,vect(tile_geom))
+  plot(density_raster)
+  return(density_raster)
 }
 
 #' Calculate building density per tile using a uniform (non-smoothed) kernel
