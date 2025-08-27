@@ -174,8 +174,11 @@ process_tile_density_uniform <- function(tile_geom,
       
   # 5. Convert to density (buildings per unit area, e.g., km²)
   cell_area <- res(r_tile)[1]^2
-  density_raster <- build_rast * (unit_scale/cell_area)
+  density_sum   <- focal(build_rast, w = kernel, fun = sum, na.policy = "omit", pad = TRUE)
+  window_area   <- sum(kernel) * cell_area
+  density_raster  <- density_sum / window_area * 1e6
 
+  
   # 6. Crop to original tile
   density_raster <- crop(density_raster, vect(tile_geom)) %>% mask(.,vect(tile_geom))
   
