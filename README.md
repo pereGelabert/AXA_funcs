@@ -50,7 +50,7 @@ output_rasters <- list()
 for (i in seq_len(nrow(tiles))) {
   cat("Processing tile", i, "of", nrow(tiles), "\n")
   
-  r_tile <- process_tile_density(
+  r_tile <- process_tile_density_gaussian(
     tile_geom = tiles[i, ],
     buildings = buildings,
     r_template = r_template,
