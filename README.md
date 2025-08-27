@@ -98,7 +98,7 @@ writeRaster(r_final, "densidad_chile.tif", overwrite = TRUE)
 ## Usage:
 ```r
 source("https://raw.githubusercontent.com/pereGelabert/AXA_funcs/refs/heads/main/get_forest_patches.R")
-source("https://raw.githubusercontent.com/pereGelabert/AXA_funcs/refs/heads/main/get_wui.R")
+source("https://raw.githubusercontent.com/pereGelabert/AXA_funcs/refs/heads/main/get_WUI.R")
 library(terra)
 library(sf)
 library(tidyverse)
