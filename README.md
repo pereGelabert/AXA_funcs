@@ -46,7 +46,7 @@ buildings <- st_read("centroides_edificaciones.gpkg")
 r_template <- rast("raster_template.tif")
 
 output_rasters <- list()
-
+# Gausian Kernel density
 for (i in seq_len(nrow(tiles))) {
   cat("Processing tile", i, "of", nrow(tiles), "\n")
   
@@ -65,6 +65,31 @@ for (i in seq_len(nrow(tiles))) {
   }
 }
 
+
+
 r_final <- do.call(mosaic, output_rasters)
 writeRaster(r_final, "densidad_chile.tif", overwrite = TRUE)
+#------------------------------
+
+output_rasters <- list()
+# Raw density
+for (i in seq_len(nrow(tiles))) {
+  cat("Processing tile", i, "of", nrow(tiles), "\n")
+  
+  r_tile <-process_tile_density_uniform(tile_geom = tile_geom,
+                             buildings = buildings,
+                             r_template = r_template,
+                             buffer_dist = 2000,
+                             unit_scale = 1e6
+)
+
+if (!is.null(r_tile)) {
+    output_rasters[[i]] <- r_tile
+    writeRaster(r_tile, paste0("densidad_tile_", i, ".tif"), overwrite = TRUE)
+  }
+}
+
+r_final <- do.call(mosaic, output_rasters)
+writeRaster(r_final, "densidad_chile.tif", overwrite = TRUE)
+
 ```
