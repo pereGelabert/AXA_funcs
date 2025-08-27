@@ -172,31 +172,20 @@ process_tile_density_uniform <- function(tile_geom,
   r_tile <- crop(r_template, vect(tile_buffer))
   
   # 4. Rasterize building points
-  build_rast <- rasterize(vect(buildings_tile), r_tile, field = "c", fun = "sum", background = 0)
-  
-  # 5. Create uniform kernel (square window)
-  res_m <- res(r_tile)[1]
-  radius <- ceiling(buffer_factor * sigma / res_m)
-  kernel <- matrix(1, nrow = 2 * radius + 1, ncol = 2 * radius + 1)
-  
-  
-  # 6. Apply focal operation to compute density
-  density_raster <- focal(build_rast, w = kernel, fun = sum, na.policy = "omit", pad = TRUE)
-  
-  # 7. Convert to desired units
-  density_raster <- density_raster * (unit_scale / (res_m^2))
+build_rast <- rasterize(vect(buildings), r_tile, field = "c", fun = "sum", background = 0)
+plot(build_rast)
+# 5. Create uniform kernel (square window)
+res_m <- res(r_tile)[1]
+radius <- (34/2)
+kernel <- matrix(1, nrow = 2 * radius + 1, ncol = 2 * radius + 1)
 
-  # 7. Convert to density (buildings per unit area, e.g., km²)
-  cell_area <- res_m^2
-  window_area <- cell_area * sum(kernel) # total area of kernel in m²
-  density_raster <- density_raster / window_area * unit_scale
+
+# 7. Convert to density (buildings per unit area, e.g., km²)
+cell_area <- res_m^2
+density_raster <- build_rast * (unit_scale/cell_area)
 
 # 8. Crop to original tile
-  density_raster <- crop(density_raster, vect(tile_geom)) %>% mask(.,vect(tile_geom))
-  plot(density_raster)
-  return(density_raster)
-  
-  
-  plot(density_raster)
-  return(density_raster)
+density_raster <- crop(density_raster, vect(tile_geom)) %>% mask(.,vect(tile_geom))
+plot(density_raster)
+return(density_raster)
 }
