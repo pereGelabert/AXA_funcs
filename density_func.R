@@ -175,7 +175,7 @@ process_tile_density_uniform <- function(tile_geom,
       
   # 5. Convert to density (buildings per unit area, e.g., km²)
   cell_area <- res(r_tile)[1]^2
-  radius <- search_radius/res(r_tile)
+  radius <- ceiling(search_radius/res(r_tile)[1])
   kernel <- matrix(1, nrow = (2 * radius + 1), ncol = (2 * radius + 1))
   density_sum   <- focal(build_rast, w = kernel, fun = sum, na.policy = "omit", pad = TRUE)
   window_area   <- sum(kernel) * cell_area
