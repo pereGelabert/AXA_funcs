@@ -55,12 +55,9 @@ process_tile_density <- function(tile_geom,
                                  sigma = 333,
                                  buffer_factor = 2,
                                  unit_scale = 1e6) {
-  require(terra)
+require(terra)
 require(sf)
-tile_geom <- tiles[1,]
-sigma = 333
-buffer_factor = 2
-unit_scale = 1e6
+
 # 1. Create buffer around tile
 buffer_dist <- sigma * buffer_factor
 tile_buffer <- st_buffer(tile_geom, buffer_dist)
