@@ -49,7 +49,7 @@
 #'   unit_scale = 1e6
 #' )
 #' }
-process_tile_density_gausian <- function(tile_geom,
+process_tile_density_gaussian <- function(tile_geom,
                                  buildings,
                                  r_template,
                                  sigma = 333,
