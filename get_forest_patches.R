@@ -75,7 +75,9 @@ get_dist_Forestpatches <- function(ESA_WC, tiles, tile_id, buffer_dist = 5000, b
   
   if(nrow(forest_patches) == 0){
     warning(paste("No forest patches > 5 km² found in tile", tile_id))
-    return(NULL)
+    forest_raster <- landcover_crop
+    values(forest_raster) <- NA
+    return(forest_raster)
   }
   
   # 5. Rasterize the forest patches for distance calculation
