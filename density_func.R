@@ -98,7 +98,7 @@ density_raster <- focal(build_rast, w = kernel, fun = sum, na.policy = "omit", p
 density_raster <- density_raster * (unit_scale / (res_m^2))
 
 # 8. Crop to original tile
-density_raster <- crop(density_raster, vect(tile_geom))
+density_raster <- crop(density_raster, vect(tile_geom)) %>% mask(.,vect(tile_geom))
 plot(density_raster)
 return(density_raster)
 }
