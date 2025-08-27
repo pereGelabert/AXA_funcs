@@ -148,7 +148,7 @@ process_tile_density_uniform <- function(tile_geom,
                                          buildings,
                                          r_template,
                                          buffer_dist = 2000,
-                                         search_dist=100,
+                                         search_radius=100,
                                          unit_scale = 1e6) {
   require(terra)
   require(sf)
