@@ -49,7 +49,7 @@
 #'   unit_scale = 1e6
 #' )
 #' }
-process_tile_density <- function(tile_geom,
+process_tile_density_gausian <- function(tile_geom,
                                  buildings,
                                  r_template,
                                  sigma = 333,
@@ -101,4 +101,94 @@ density_raster <- density_raster * (unit_scale / (res_m^2))
 density_raster <- crop(density_raster, vect(tile_geom)) %>% mask(.,vect(tile_geom))
 plot(density_raster)
 return(density_raster)
+}
+
+#' Calculate building density per tile using a uniform (non-smoothed) kernel
+#'
+#' This function computes the density of buildings within a specific tile,
+#' applying a uniform kernel (box filter) instead of a Gaussian kernel.
+#' This produces a local sum of buildings over a specified radius without
+#' smoothing the weights.
+#'
+#' @param tile_geom An sf object representing a polygon tile where density
+#'   will be calculated.
+#' @param buildings An sf object containing building centroids.
+#' @param r_template A terra raster defining the resolution and extent of the output.
+#' @param sigma Numeric. Radius distance in meters for the uniform kernel.
+#'   This is interpreted as half the window size. Default is 333.
+#' @param buffer_factor Numeric. Multiplier of sigma to define the buffer
+#'   around the tile. Ensures kernel calculation near tile edges. Default is 2.
+#' @param unit_scale Numeric. Factor to convert the output density units.
+#'   For example, 1e6 converts density to buildings per km². Default is 1e6.
+#'
+#' @return A terra raster of building density for the given tile. Returns NULL
+#'   if no buildings are present within the buffered tile.
+#'
+#' @details
+#' The function replaces the Gaussian kernel with a uniform kernel, meaning
+#' all cells within the window contribute equally. This is useful when you
+#' want an exact local average/count without weighting by distance.
+#'
+#' @examples
+#' \dontrun{
+#' tiles <- st_read("tiles.gpkg")
+#' buildings <- st_read("centroides_edificaciones.gpkg")
+#' r_template <- rast("raster_template.tif")
+#'
+#' density_tile <- process_tile_density_uniform(
+#'   tile_geom = tiles[1,],
+#'   buildings = buildings,
+#'   r_template = r_template,
+#'   sigma = 333,
+#'   buffer_factor = 2,
+#'   unit_scale = 1e6
+#' )
+#' }
+process_tile_density_uniform <- function(tile_geom,
+                                         buildings,
+                                         r_template,
+                                         sigma = 333,
+                                         buffer_factor = 2,
+                                         unit_scale = 1e6) {
+  require(terra)
+  require(sf)
+  
+  # 1. Create buffer around tile
+  buffer_dist <- sigma * buffer_factor
+  tile_buffer <- st_buffer(tile_geom, buffer_dist)
+  
+  # 2. Filter buildings within buffered tile (fast bbox filter)
+  bbox_aoi <- st_bbox(tile_buffer)
+  coords <- st_coordinates(buildings)
+  mask <- coords[,1] >= bbox_aoi["xmin"] &
+    coords[,1] <= bbox_aoi["xmax"] &
+    coords[,2] >= bbox_aoi["ymin"] &
+    coords[,2] <= bbox_aoi["ymax"]
+  buildings_tile <- buildings[mask, ]
+  if (nrow(buildings_tile) == 0) return(NULL)
+  buildings_tile <- buildings_tile %>% mutate(c = 1)
+  
+  # 3. Crop raster template to buffered tile
+  r_tile <- crop(r_template, vect(tile_buffer))
+  
+  # 4. Rasterize building points
+  build_rast <- rasterize(vect(buildings_tile), r_tile, field = "c", fun = "sum", background = 0)
+  
+  # 5. Create uniform kernel (square window)
+  res_m <- res(r_tile)[1]
+  radius <- ceiling(buffer_factor * sigma / res_m)
+  kernel <- matrix(1, nrow = 2 * radius + 1, ncol = 2 * radius + 1)
+  kernel <- kernel / sum(kernel)  # normalize
+  
+  # 6. Apply focal operation to compute density
+  density_raster <- focal(build_rast, w = kernel, fun = sum, na.policy = "omit", pad = TRUE)
+  
+  # 7. Convert to desired units
+  density_raster <- density_raster * (unit_scale / (res_m^2))
+  
+  # 8. Crop to original tile
+  density_raster <- crop(density_raster, vect(tile_geom)) %>% mask(., vect(tile_geom))
+  
+  plot(density_raster)
+  return(density_raster)
 }
