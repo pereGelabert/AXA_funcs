@@ -170,7 +170,7 @@ process_tile_density_uniform <- function(tile_geom,
   r_tile <- crop(r_template, vect(tile_buffer))
   
   # 4. Rasterize building points
-  build_rast <- rasterize(vect(buildings), r_tile, field = "c", fun = "sum", background = 0)
+  build_rast <- rasterize(vect(buildings_tile), r_tile, field = "c", fun = "sum", background = 0)
       
   # 5. Convert to density (buildings per unit area, e.g., km²)
   cell_area <- res(r_tile)[1]^2
