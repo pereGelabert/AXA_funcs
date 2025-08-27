@@ -63,7 +63,7 @@ generate_wui <- function(tiles, tile_id,
                          tree_height_min = 4,
                          tree_cover_th = 50, 
                          out.dir = NULL){
-
+  
   # 1. Extract the tile polygon
   tile <- tiles[tile_id, ]
   
@@ -91,8 +91,9 @@ generate_wui <- function(tiles, tile_id,
   wui[TC_i >= tree_cover_th & house_dens_i >= 6.18 & TH_i >= tree_height_min] <- 1
   
   # 6. Interface WUI: outside forest but within buffer, trees above height threshold
-  wui[TC_i < tree_cover_th & house_dens_i >= 6.18 & !is.na(forest_patches) & TH_i >= tree_height_min] <- 2
-  
+  if (all(is.na(values(forest_patches)))==F) {
+    wui[TC_i < tree_cover_th & house_dens_i >= 6.18 & !is.na(forest_patches) & TH_i >= tree_height_min] <- 2
+  }
   # 7. Save WUI raster
   names(wui) <- "WUI"
   if(!is.null(out.dir)){
