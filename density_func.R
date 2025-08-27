@@ -147,7 +147,8 @@ return(density_raster)
 process_tile_density_uniform <- function(tile_geom,
                                          buildings,
                                          r_template,
-                                         buffer_dist = 200,
+                                         buffer_dist = 2000,
+                                         search_dist=100,
                                          unit_scale = 1e6) {
   require(terra)
   require(sf)
@@ -174,6 +175,8 @@ process_tile_density_uniform <- function(tile_geom,
       
   # 5. Convert to density (buildings per unit area, e.g., km²)
   cell_area <- res(r_tile)[1]^2
+  radius <- search_radius/res(r_tile)
+  kernel <- matrix(1, nrow = (2 * radius + 1), ncol = (2 * radius + 1))
   density_sum   <- focal(build_rast, w = kernel, fun = sum, na.policy = "omit", pad = TRUE)
   window_area   <- sum(kernel) * cell_area
   density_raster  <- density_sum / window_area * 1e6
