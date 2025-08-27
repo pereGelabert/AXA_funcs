@@ -50,15 +50,14 @@ get_dist_Forestpatches <- function(ESA_WC, tiles, tile_id, buffer_dist = 5000, b
   require(dplyr)
   
   # 1. Load the tile geometry for the specified ID
-  tile <- st_read(tiles, quiet = TRUE) %>% 
-    filter(id == tile_id)
+  tile <- tiles[i,]
   
   if(nrow(tile) == 0){
     stop(paste("Tile with id", tile_id, "was not found"))
   }
   
   # 2. Load ESA LandCover raster and crop using the tile with buffer
-  landcover <- rast(ESA_WC)
+  landcover <- ESA_WC
   tile_buffer <- st_buffer(tile, buffer_dist)
   
   landcover_crop <- crop(landcover, vect(tile_buffer))
