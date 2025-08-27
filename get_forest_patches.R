@@ -50,7 +50,7 @@ get_dist_Forestpatches <- function(ESA_WC, tiles, tile_id, buffer_dist = 5000, b
   require(dplyr)
   
   # 1. Load the tile geometry for the specified ID
-  tile <- tiles[i,]
+  tile <- tiles[tile_id,]
   
   if(nrow(tile) == 0){
     stop(paste("Tile with id", tile_id, "was not found"))
