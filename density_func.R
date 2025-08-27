@@ -178,7 +178,7 @@ process_tile_density_uniform <- function(tile_geom,
   res_m <- res(r_tile)[1]
   radius <- ceiling(buffer_factor * sigma / res_m)
   kernel <- matrix(1, nrow = 2 * radius + 1, ncol = 2 * radius + 1)
-  kernel <- kernel / sum(kernel)  # normalize
+  
   
   # 6. Apply focal operation to compute density
   density_raster <- focal(build_rast, w = kernel, fun = sum, na.policy = "omit", pad = TRUE)
