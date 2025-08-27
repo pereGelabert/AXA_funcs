@@ -93,3 +93,22 @@ r_final <- do.call(mosaic, output_rasters)
 writeRaster(r_final, "densidad_chile.tif", overwrite = TRUE)
 
 ```
+---
+# WUI map
+## Usage:
+```r
+source("https://raw.githubusercontent.com/pereGelabert/AXA_funcs/refs/heads/main/get_forest_patches.R")
+source("https://raw.githubusercontent.com/pereGelabert/AXA_funcs/refs/heads/main/get_wui.R")
+library(terra)
+library(sf)
+library(tidyverse)
+
+wui_result <- generate_wui(tiles = st_read("./Imputs/tiles.gpkg"),
+                           tile_id = 1,
+                           landcover_raster = rast("./Imputs/ESA WC/ESA_WC_res.tif"),
+                           canopy_height_raster = rast("./Imputs/ETH/TH_res.tif"),
+                           canopy_cover_raster = rast("./Imputs/FCC/FCC_res.tif"),
+                           buildings_raster = rast("./Imputs/Buildings/buidings_deinsity_res.tif"),
+                           tree_height_min = 4,
+                           tree_cover_th=50,
+                           out.dir="./Results")
