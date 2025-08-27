@@ -101,7 +101,6 @@ generate_wui <- function(tiles, tile_id,
   }
   
   # 8. Return factor raster masked to tile geometry
-  # 9. Quick visualization
   plot(wui %>% as.factor(), col=c("orange","red"), main = paste("WUI (tile", tile_id, ")"))
   plot(st_geometry(tile), add = TRUE, border = "red", lwd = 2)
   return(wui %>% as.factor() %>% mask(., vect(tile)))
